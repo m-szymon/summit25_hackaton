@@ -1,0 +1,294 @@
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<style>
+  :host {
+    --bright-blue: oklch(51.01% 0.274 263.83);
+    --electric-violet: oklch(53.18% 0.28 296.97);
+    --french-violet: oklch(47.66% 0.246 305.88);
+    --vivid-pink: oklch(69.02% 0.277 332.77);
+    --hot-red: oklch(61.42% 0.238 15.34);
+    --orange-red: oklch(63.32% 0.24 31.68);
+
+    --gray-900: oklch(19.37% 0.006 300.98);
+    --gray-700: oklch(36.98% 0.014 302.71);
+    --gray-400: oklch(70.9% 0.015 304.04);
+
+    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
+      180deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
+      90deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --pill-accent: var(--bright-blue);
+
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    font-size: 3.125rem;
+    color: var(--gray-900);
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.125rem;
+    margin: 0;
+    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+  }
+
+  p {
+    margin: 0;
+    color: var(--gray-700);
+  }
+
+  main {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: inherit;
+    position: relative;
+  }
+
+  .angular-logo {
+    max-width: 9.2rem;
+  }
+
+  .content {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 3rem;
+  }
+
+  .content h1 {
+    margin-top: 1.75rem;
+  }
+
+  .content p {
+    margin-top: 1.5rem;
+  }
+
+  .divider {
+    width: 1px;
+    background: var(--red-to-pink-to-purple-vertical-gradient);
+    margin-inline: 0.5rem;
+  }
+
+  .pill-group {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    --pill-accent: var(--bright-blue);
+    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
+    color: var(--pill-accent);
+    padding-inline: 0.75rem;
+    padding-block: 0.375rem;
+    border-radius: 2.75rem;
+    border: 0;
+    transition: background 0.3s ease;
+    font-family: var(--inter-font);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+    text-decoration: none;
+  }
+
+  .pill:hover {
+    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
+  }
+
+  .pill-group .pill:nth-child(6n + 1) {
+    --pill-accent: var(--bright-blue);
+  }
+  .pill-group .pill:nth-child(6n + 2) {
+    --pill-accent: var(--french-violet);
+  }
+  .pill-group .pill:nth-child(6n + 3),
+  .pill-group .pill:nth-child(6n + 4),
+  .pill-group .pill:nth-child(6n + 5) {
+    --pill-accent: var(--hot-red);
+  }
+
+  .pill-group svg {
+    margin-inline-start: 0.25rem;
+  }
+
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.73rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-links path {
+    transition: fill 0.3s ease;
+    fill: var(--gray-400);
+  }
+
+  .social-links a:hover svg path {
+    fill: var(--gray-900);
+  }
+
+  @media screen and (max-width: 650px) {
+    .content {
+      flex-direction: column;
+      width: max-content;
+    }
+
+    .divider {
+      height: 1px;
+      width: 100%;
+      background: var(--red-to-pink-to-purple-horizontal-gradient);
+      margin-block: 1.5rem;
+    }
+  }
+</style>
+
+<main class="main">
+  <div class="content">
+    <div class="left-side">
+      <!-- Show time left and working icon only before deadline -->
+      <span *ngIf="deadline && !isAfterDeadline()" style="display:block;font-size:2.5rem;font-weight:bold">
+        {{ timeLeft }}
+        <svg style="vertical-align:middle;margin-left:0.5rem" width="64" height="64" viewBox="0 0 100 100">
+          <!-- Keyboard -->
+          <rect x="20" y="70" width="60" height="20" rx="3" fill="#2a2a2a" />
+          <rect x="25" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="33" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="41" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="49" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="57" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="65" y="73" width="5" height="5" rx="1" fill="#4a4a4a" />
+          <rect x="30" y="81" width="35" height="5" rx="1" fill="#4a4a4a" />
+          
+          <!-- ScyllaDB Mascot Body (Blue Octopus) -->
+          <circle cx="50" cy="45" r="20" fill="#0081CB" />
+          
+          <!-- Eye -->
+          <circle cx="50" cy="40" r="8" fill="white" />
+          <circle cx="50" cy="40" r="4" fill="black">
+            <animate attributeName="cx" values="50;52;50;48;50" dur="2s" repeatCount="indefinite" />
+          </circle>
+          
+          <!-- Tentacles -->
+          <path d="M30 50 Q25 60 35 75" stroke="#0081CB" stroke-width="5" fill="transparent">
+            <animate attributeName="d" values="M30 50 Q25 60 35 75;M30 50 Q25 65 35 75;M30 50 Q25 60 35 75" dur="3s" repeatCount="indefinite" />
+          </path>
+          <path d="M70 50 Q75 60 65 75" stroke="#0081CB" stroke-width="5" fill="transparent">
+            <animate attributeName="d" values="M70 50 Q75 60 65 75;M70 50 Q75 65 65 75;M70 50 Q75 60 65 75" dur="2.5s" repeatCount="indefinite" />
+          </path>
+          
+          <!-- Typing Tentacles -->
+          <path d="M40 55 Q40 65 38 73" stroke="#0081CB" stroke-width="4" fill="transparent">
+            <animate attributeName="d" values="M40 55 Q40 65 38 73;M40 55 Q40 65 41 73;M40 55 Q40 65 38 73" dur="0.5s" repeatCount="indefinite" />
+          </path>
+          <path d="M60 55 Q60 65 62 73" stroke="#0081CB" stroke-width="4" fill="transparent">
+            <animate attributeName="d" values="M60 55 Q60 65 62 73;M60 55 Q60 65 59 73;M60 55 Q60 65 62 73" dur="0.7s" repeatCount="indefinite" />
+          </path>
+          
+          <!-- Little keyboard taps -->
+          <circle cx="38" cy="76" r="0" fill="#5af">
+            <animate attributeName="r" values="0;3;0" dur="0.5s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="59" cy="76" r="0" fill="#5af">
+            <animate attributeName="r" values="0;0;3;0" dur="0.7s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+      </span>
+      <!-- Show done icon only after deadline -->
+      <span *ngIf="deadline && isAfterDeadline()" style="display:block;font-size:2.5rem;font-weight:bold">
+        <svg style="vertical-align:middle;margin-left:0.5rem" width="80" height="80" viewBox="0 0 140 110">
+          <!-- Sunbed: headrest left, legs right-->
+          <!-- Bed surface with slats -->
+          <rect x="30" y="95" width="80" height="12" rx="4" fill="#e2c48d" />
+          <g>
+            <rect x="32" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+            <rect x="44" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+            <rect x="56" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+            <rect x="68" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+            <rect x="80" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+            <rect x="92" y="97" width="10" height="8" rx="2" fill="#d1b06a" />
+          </g>
+          <!-- Sunbed frame -->
+          <rect x="28" y="105" width="84" height="4" rx="2" fill="#bfa76f" />
+          <!-- Sunbed legs -->
+          <rect x="35" y="108" width="6" height="8" rx="2" fill="#a88c4a" />
+          <rect x="99" y="108" width="6" height="8" rx="2" fill="#a88c4a" />
+          <!-- Backrest (angled, left side) -->
+          <rect x="30" y="70" width="10" height="38" rx="3" fill="#e2c48d" transform="rotate(-15 30 70)" />
+          <rect x="33" y="75" width="4" height="30" rx="1.5" fill="#bfa76f" transform="rotate(-15 33 75)" />
+          <!-- ScyllaDB Mascot Body (laying) -->
+          <ellipse cx="75" cy="80" rx="28" ry="20" fill="#0081CB" transform="rotate(-20 75 80)" />
+          <!-- Eye -->
+          <ellipse cx="82" cy="77" rx="9" ry="7" fill="white" transform="rotate(-20 82 77)" />
+          <ellipse cx="82" cy="77" rx="4.5" ry="3.5" fill="black">
+            <animate attributeName="cx" values="82;86;82;78;82" dur="2s" repeatCount="indefinite" />
+          </ellipse>
+          <!-- Smile -->
+          <path d="M80 90 Q85 98 95 90" stroke="#fff" stroke-width="2.5" fill="none" />
+          <!-- Tentacles (relaxed) -->
+          <path d="M60 95 Q45 110 75 112" stroke="#0081CB" stroke-width="5" fill="none">
+            <animate attributeName="d" values="M60 95 Q45 110 75 112;M60 95 Q40 115 75 112;M60 95 Q45 110 75 112" dur="3s" repeatCount="indefinite" />
+          </path>
+          <!-- Leftmost tentacle -->
+          <path d="M55 90 Q35 100 50 120" stroke="#0081CB" stroke-width="5" fill="none">
+            <animate attributeName="d" values="M55 90 Q35 100 50 120;M55 90 Q30 110 50 120;M55 90 Q35 100 50 120" dur="3.5s" repeatCount="indefinite" />
+          </path>
+          <!-- Centered tentacle -->
+          <path d="M85 95 Q100 110 75 120" stroke="#0081CB" stroke-width="5" fill="none">
+            <animate attributeName="d" values="M85 95 Q100 110 75 120;M85 95 Q105 115 75 120;M85 95 Q100 110 75 120" dur="2.5s" repeatCount="indefinite" />
+          </path>
+          <!-- Rightmost tentacle -->
+          <path d="M92 88 Q120 100 110 120" stroke="#0081CB" stroke-width="5" fill="none">
+            <animate attributeName="d" values="M92 88 Q120 100 110 120;M92 88 Q130 110 110 120;M92 88 Q120 100 110 120" dur="3.2s" repeatCount="indefinite" />
+          </path>
+        </svg>
+      </span>
+
+      <span *ngIf="deadline && !isAfterDeadline()" style="display:block;font-size:1.1rem;margin-top:0.5rem">{{ deadlineString }}</span>
+    </div>
+  </div>
+</main>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+
