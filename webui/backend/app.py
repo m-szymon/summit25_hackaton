@@ -24,7 +24,6 @@ def load_config():
     
 def get_client():
     return AlternatorWikipediaClient(load_config().get('alternator', {})['endpoint_url'])
-#client.create_articles_table()
 
 def get_reader():
     from wikipedia.multistream import WikipediaMultistreamReader
@@ -33,6 +32,14 @@ def get_reader():
     xml_path = wikipedia_cfg.get('dump')
     index_path = wikipedia_cfg.get('index')
     return WikipediaMultistreamReader(xml_path, index_path)
+
+def get_text_search_client():
+    config = load_config()
+    text_search_cfg = config.get('text-search')
+    if not text_search_cfg or not text_search_cfg.get('endpoint_url'):
+        return None
+    from text_search.text_search_client import TextSearchClient
+    return TextSearchClient(text_search_cfg['endpoint_url'])
 
 @app.route('/api/deadline')
 def get_deadline():
@@ -81,6 +88,13 @@ def add_alternator_wikipedia_article():
     title, text = articles[0]
     client = get_client()
     client.add_article(title, text)
+    # Add to text-search index if client exists
+    text_search_client = get_text_search_client()
+    if text_search_client:
+        try:
+            text_search_client.add_item(title, text)
+        except Exception as e:
+            print(f"Error adding to text-search index: {e}")
     return jsonify({'status': 'added', 'title': title})
 
 @app.route('/api/alternator-wikipedia-article', methods=['DELETE'])

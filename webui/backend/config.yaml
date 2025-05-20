@@ -4,4 +4,7 @@ deadline: "2025-05-22T13:00:00+02:00"
   #index: "../../wikipedia/enwiki-latest-pages-articles-multistream-index.txt.bz2"
 #  index: "../../wikipedia/new_index.bin"
 alternator:
-  endpoint_url: "http://localhost:8000"
+  #endpoint_url: "http://localhost:8000"
+  endpoint_url: "http://swasik-vsearch-test-usearch.germanywestcentral.cloudapp.azure.com:8000"
+#text-search:
+#  endpoint_url: "http://localhost:8001"
