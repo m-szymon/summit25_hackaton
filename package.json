@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^1.16.1"
+  }
+}
