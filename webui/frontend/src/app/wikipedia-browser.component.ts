@@ -26,7 +26,7 @@ export class WikipediaBrowserComponent implements OnInit {
   maxPage: number | null = 1;
   loading = false;
   expandedRows: Set<number> = new Set();
-  private _activeTab: 'file' | 'alternator' | 'tests' | 'search' = 'file';
+  private _activeTab: 'file' | 'alternator' | 'tests' | 'search' = 'search';
 
   alternatorArticles: any[] = [];
   alternatorStartTitle: string = '';
@@ -47,9 +47,27 @@ export class WikipediaBrowserComponent implements OnInit {
   searchLoading: boolean = false;
   searchError: string = '';
 
+  // Flag to show/hide the file dump tab
+  showFileDumpTab: boolean = false;
+
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
+    this.http.get<{ has_wikipedia: boolean }>('/api/has-wikipedia-config').subscribe({
+      next: res => {
+        this.showFileDumpTab = res.has_wikipedia;
+        // If wikipedia is missing and file tab is active, switch to search
+        if (!this.showFileDumpTab && this._activeTab === 'file') {
+          this._activeTab = 'search';
+        }
+      },
+      error: _err => {
+        this.showFileDumpTab = false;
+        if (this._activeTab === 'file') {
+          this._activeTab = 'search';
+        }
+      }
+    });
     this.loadArticles();
     this.pollTestResults();
     // Optionally, load alternator articles on init

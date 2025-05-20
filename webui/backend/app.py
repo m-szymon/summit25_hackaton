@@ -187,5 +187,11 @@ def api_test_results():
                 results = None
     return jsonify({'running': running, 'results': results, 'partial': partial})
 
+@app.route('/api/has-wikipedia-config', methods=['GET'])
+def has_wikipedia_config():
+    config = load_config()
+    has_wikipedia = 'wikipedia' in config and config['wikipedia'] is not None
+    return jsonify({'has_wikipedia': has_wikipedia})
+
 if __name__ == '__main__':
     app.run(debug=True)
