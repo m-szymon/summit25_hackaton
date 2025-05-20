@@ -9,7 +9,6 @@ import threading
 import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from wikipedia.multistream import WikipediaMultistreamReader
 from alternator.alternator_client import AlternatorWikipediaClient
 
 app = Flask(__name__)
@@ -28,6 +27,7 @@ def get_client():
 #client.create_articles_table()
 
 def get_reader():
+    from wikipedia.multistream import WikipediaMultistreamReader
     config = load_config()
     wikipedia_cfg = config.get('wikipedia', {})
     xml_path = wikipedia_cfg.get('dump')

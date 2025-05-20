@@ -7,3 +7,4 @@ pytest-asyncio
 pytest-flask
 pytest-xdist
 allure-pytest
+boto3
