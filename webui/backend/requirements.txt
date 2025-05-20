@@ -1,3 +1,9 @@
 Flask
 PyYAML
 flask-cors
+pytest
+pytest-json-report
+pytest-asyncio
+pytest-flask
+pytest-xdist
+allure-pytest

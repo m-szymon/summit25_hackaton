@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { WikipediaBrowserComponent } from './wikipedia-browser.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   standalone: true,
-  imports: [NgIf]
+  imports: [NgIf, FormsModule, WikipediaBrowserComponent]
 })
 export class AppComponent implements OnInit {
   deadline: Date | null = null;

@@ -1,0 +1,189 @@
+<div class="wikipedia-browser">
+  <div class="tabs">
+    <button [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">File Dump</button>
+    <button [class.active]="activeTab === 'alternator'" (click)="activeTab = 'alternator'">Alternator articles</button>
+    <button [class.active]="activeTab === 'tests'" (click)="activeTab = 'tests'">Tests</button>
+  </div>
+
+  <div *ngIf="activeTab === 'file'">
+    <div class="controls" style="justify-content: center; text-align: center;">
+      <label>Rows per page:
+        <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
+          <option *ngFor="let size of [10, 50, 100]" [value]="size">{{size}}</option>
+        </select>
+      </label>
+      <button (click)="prevPage()" [disabled]="page === 1 || loading" style="margin-left: 1em;">
+        Previous
+      </button>
+      <span style="margin-left: 1em;">Page</span>
+      <input type="number" min="1" [(ngModel)]="page" (change)="onManualPageChange()" style="width: 10em; text-align: center; margin: 0 0.5em;" [disabled]="loading">
+      <button (click)="nextPage()" [disabled]="articles.length < pageSize || loading" style="margin-left: 1em;">
+        Next
+      </button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Text</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let article of articles; let i = index">
+          <td>{{article.title}}</td>
+          <td>
+            <div class="text-preview" [class.expanded]="isExpanded(i)">
+              <ng-container *ngIf="!isExpanded(i); else fullText">
+                {{ article.text.split('\n').slice(0,3).join('\n') }}<span *ngIf="article.text.split('\n').length > 3">...</span>
+              </ng-container>
+              <ng-template #fullText>
+                {{ article.text }}
+              </ng-template>
+            </div>
+            <button (click)="toggleRow(i)">
+              {{ isExpanded(i) ? 'Show less' : 'Show more' }}
+            </button>
+          </td>
+          <td>
+            <button class="action-btn" (click)="openWikipedia(article.title)">
+              View on Wikipedia
+            </button><br>
+            <button *ngIf="article.alternator" (click)="removeFromAlternator(article.title)" class="action-btn">
+              Remove from Alternator
+            </button><br *ngIf="article.alternator">
+            <button *ngIf="!article.alternator" (click)="addToAlternator(article.index)" class="action-btn">
+              Add to Alternator
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="loading">Loading...</div>
+  </div>
+  <div *ngIf="activeTab === 'alternator'">
+    <div class="controls" style="justify-content: center; text-align: center;">
+      <label>Rows per page:
+        <select [(ngModel)]="alternatorCount" (change)="onAlternatorCountChange()">
+          <option *ngFor="let size of [10, 50, 100]" [value]="size">{{size}}</option>
+        </select>
+      </label>
+      <button (click)="alternatorPrevPage()" [disabled]="!alternatorPrevKey || alternatorLoading" style="margin-left: 1em;">Previous</button>
+      <label>Page:
+        <input type="text" [(ngModel)]="alternatorStartTitle" (keyup.enter)="onAlternatorStartTitleChange()" (change)="onAlternatorStartTitleChange()" style="width: 15em; text-align: center; margin: 0 0.5em;">
+      </label>
+      <button (click)="alternatorNextPage()" [disabled]="!alternatorNextKey || alternatorLoading" style="margin-left: 1em;">Next</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Text</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let article of alternatorArticles; let i = index">
+          <td>{{article.title}}</td>
+          <td>
+            <div class="text-preview" [class.expanded]="isAlternatorExpanded(i)">
+              <ng-container *ngIf="!isAlternatorExpanded(i); else fullAlternatorText">
+                {{ article.text.split('\n').slice(0,3).join('\n') }}<span *ngIf="article.text.split('\n').length > 3">...</span>
+              </ng-container>
+              <ng-template #fullAlternatorText>
+                {{ article.text }}
+              </ng-template>
+            </div>
+            <button (click)="toggleAlternatorRow(i)">
+              {{ isAlternatorExpanded(i) ? 'Show less' : 'Show more' }}
+            </button>
+          </td>
+          <td>
+            <button class="action-btn" (click)="openWikipedia(article.title)">View on Wikipedia</button><br>
+            <button (click)="removeFromAlternator(article.title)" class="action-btn">Remove from Alternator</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="alternatorLoading">Loading...</div>
+  </div>
+  <div *ngIf="activeTab === 'tests'">
+    <div style="margin: 2em 0; text-align: center;">
+      <button (click)="runTests()" [disabled]="testRunning" style="padding: 0.5em 2em; font-size: 1.1em;">Run Tests</button>
+      <span *ngIf="testRunning" style="margin-left: 1em; color: #007bff;">Running tests...</span>
+    </div>
+    <div *ngIf="testPartial && testRunning" style="background: #f8f9fa; border: 1px solid #eee; padding: 1em; margin-bottom: 1em; font-family: monospace; max-height: 300px; overflow: auto;">
+      <b>Partial output:</b>
+      <pre>{{ testPartial }}</pre>
+    </div>
+    <div *ngIf="testResults">
+      <h3>Test Results</h3>
+      <div *ngIf="testResults.summary">
+        <b>Passed:</b> {{ testResults.summary.passed || testResults.summary.Passed || 0 }}<br>
+        <b>Failed:</b> {{ testResults.summary.failed || testResults.summary.Failed || 0 }}<br>
+        <b>Errors:</b> {{ testResults.summary.error || testResults.summary.Errors || 0 }}<br>
+        <b>Skipped:</b> {{ testResults.summary.skipped || testResults.summary.Skipped || 0 }}<br>
+        <b>Total:</b> {{ testResults.summary.total || testResults.summary.Total || 0 }}<br>
+      </div>
+      <div *ngIf="testResults.tests && testResults.tests.length">
+        <table style="width: 100%; margin-top: 1em; table-layout: fixed;">
+          <tr>
+            <th style="width: 32%">Name</th>
+            <th style="width: 12%">Outcome</th>
+            <th style="width: 8%">Line</th>
+            <th style="width: 48%">Message</th>
+          </tr>
+          <tr *ngFor="let t of testResults.tests">
+            <td style="word-break: break-all;">{{ t.nodeid }}</td>
+            <td style="text-align: center;">{{ t.outcome }}</td>
+            <td style="text-align: center;">{{ t.lineno }}</td>
+            <td style="word-break: break-word; white-space: pre-line;">
+              <span *ngIf="t.longrepr">{{ t.longrepr }}</span>
+              <span *ngIf="t.call && t.call.crash">{{ t.call.crash.message }}</span>
+              <span *ngIf="t.call && t.call.longrepr">{{ t.call.longrepr }}</span>
+              <span *ngIf="t.setup && t.setup.crash">{{ t.setup.crash.message }}</span>
+              <span *ngIf="t.setup && t.setup.longrepr">{{ t.setup.longrepr }}</span>
+              <span *ngIf="t.teardown && t.teardown.crash">{{ t.teardown.crash.message }}</span>
+              <span *ngIf="t.teardown && t.teardown.longrepr">{{ t.teardown.longrepr }}</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div *ngIf="testResults.collectors && testResults.collectors.length">
+        <h4>Collectors</h4>
+        <ul>
+          <li *ngFor="let c of testResults.collectors">{{ c.nodeid }} - {{ c.outcome }}</li>
+        </ul>
+      </div>
+      <div *ngIf="testResults.exitcode !== undefined">
+        <b>Exit code:</b> {{ testResults.exitcode }}<br>
+      </div>
+      <div *ngIf="testResults.duration !== undefined">
+        <b>Duration:</b> {{ testResults.duration | number:'1.2-2' }}s<br>
+      </div>
+    </div>
+    <div *ngIf="!testResults && !testRunning">No test results available.</div>
+  </div>
+</div>
+
+<style>
+.tabs {
+  display: flex;
+  margin-bottom: 1em;
+}
+.tabs button {
+  padding: 0.5em 1.5em;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 2px solid transparent;
+  margin-right: 0.5em;
+  border-radius: 5px 5px 0 0;
+}
+.tabs button.active {
+  background: #fff;
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+</style>
