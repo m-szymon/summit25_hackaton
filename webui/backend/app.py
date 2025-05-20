@@ -103,9 +103,8 @@ def get_alternator_wikipedia_articles_page():
     """
     start_title = request.args.get('start_title')
     count = int(request.args.get('count', 10))
-    forward = request.args.get('forward', 'true').lower() == 'true'
     client = get_client()
-    articles = client.get_articles_page_from(start_title=start_title, page_size=count, forward=forward)
+    articles = client.get_articles_page_from(start_title=start_title, page_size=count)
     return jsonify({'articles': articles})
 
 def run_pytest_and_store_results():

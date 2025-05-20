@@ -34,7 +34,6 @@ export class WikipediaBrowserComponent implements OnInit {
   alternatorLoading: boolean = false;
   alternatorExpandedRows: Set<number> = new Set();
   alternatorNextKey: string | null = null;
-  alternatorPrevKey: string | null = null;
 
   // Test tab state
   testResults: any = null;
@@ -76,27 +75,18 @@ export class WikipediaBrowserComponent implements OnInit {
     this.loadAlternatorArticles();
   }
 
-  loadAlternatorArticles(direction: 'forward' | 'backward' = 'forward') {
+  loadAlternatorArticles() {
     this.alternatorLoading = true;
     let startTitle = this.alternatorStartTitle;
     let count = this.alternatorCount + 1; // Fetch one extra for navigation
-    let forward = true;
-    if (direction === 'backward') {
-      forward = false;
-    }
     const params = [
       startTitle ? `start_title=${encodeURIComponent(startTitle)}` : '',
-      `count=${count}`,
-      `forward=${forward}`
+      `count=${count}`
     ].filter(Boolean).join('&');
     this.http.get<any>(`/api/get_articles_page_from?${params}`)
       .subscribe(res => {
         let articles = res.articles || [];
         let hasExtra = articles.length > this.alternatorCount;
-        if (direction === 'backward') {
-          // Backward: reverse to display in original order
-          articles = articles.reverse();
-        }
         if (hasExtra) {
           this.alternatorNextKey = articles[this.alternatorCount].title;
           articles = articles.slice(0, this.alternatorCount);
@@ -104,7 +94,6 @@ export class WikipediaBrowserComponent implements OnInit {
           this.alternatorNextKey = null;
         }
         this.alternatorStartTitle = articles.length > 0 ? articles[0].title : "";
-        this.alternatorPrevKey = this.alternatorStartTitle;
         this.alternatorArticles = articles;
         this.alternatorLoading = false;
         this.alternatorExpandedRows.clear();
@@ -135,13 +124,7 @@ export class WikipediaBrowserComponent implements OnInit {
   alternatorNextPage() {
     if (!this.alternatorNextKey) return;
     this.alternatorStartTitle = this.alternatorNextKey;
-    this.loadAlternatorArticles('forward');
-  }
-
-  alternatorPrevPage() {
-    if (!this.alternatorPrevKey) return;
-    this.alternatorStartTitle = this.alternatorPrevKey;
-    this.loadAlternatorArticles('backward');
+    this.loadAlternatorArticles();
   }
 
   toggleRow(idx: number) {

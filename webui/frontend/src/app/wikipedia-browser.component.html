@@ -68,7 +68,6 @@
           <option *ngFor="let size of [10, 50, 100]" [value]="size">{{size}}</option>
         </select>
       </label>
-      <button (click)="alternatorPrevPage()" [disabled]="!alternatorPrevKey || alternatorLoading" style="margin-left: 1em;">Previous</button>
       <label>Page:
         <input type="text" [(ngModel)]="alternatorStartTitle" (keyup.enter)="onAlternatorStartTitleChange()" (change)="onAlternatorStartTitleChange()" style="width: 15em; text-align: center; margin: 0 0.5em;">
       </label>

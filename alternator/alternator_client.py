@@ -104,14 +104,11 @@ class AlternatorWikipediaClient(AlternatorClient):
     """
     TABLE_NAME = 'wikipedia_articles'
     KEY_SCHEMA = [
-        {'AttributeName': 'pk', 'KeyType': 'HASH'},
-        {'AttributeName': 'title', 'KeyType': 'RANGE'}
+        {'AttributeName': 'title', 'KeyType': 'HASH'}
     ]
     ATTRIBUTE_DEFINITIONS = [
-        {'AttributeName': 'pk', 'AttributeType': 'N'},
         {'AttributeName': 'title', 'AttributeType': 'S'}
     ]
-    PK_VALUE = 1
 
     def create_articles_table(self):
         """
@@ -166,7 +163,7 @@ class AlternatorWikipediaClient(AlternatorClient):
         """
         Add a single Wikipedia article.
         """
-        item = {'pk': self.PK_VALUE, 'title': title, 'text': text}
+        item = {'title': title, 'text': text}
         return self._handle_table_not_exists(self.add_rows, self.TABLE_NAME, [item])
 
     def add_articles(self, articles):
@@ -175,7 +172,7 @@ class AlternatorWikipediaClient(AlternatorClient):
         Args:
             articles (list of dict): Each dict must have 'title' and 'text'.
         """
-        items = [{'pk': self.PK_VALUE, 'title': a['title'], 'text': a['text']} for a in articles]
+        items = [{'title': a['title'], 'text': a['text']} for a in articles]
         return self._handle_table_not_exists(self.add_rows, self.TABLE_NAME, items)
 
     def get_article(self, title):
@@ -183,7 +180,7 @@ class AlternatorWikipediaClient(AlternatorClient):
         Retrieve a Wikipedia article by title.
         """
         def get():
-            items = self.get_rows(self.TABLE_NAME, keys=[{'pk': self.PK_VALUE, 'title': title}])
+            items = self.get_rows(self.TABLE_NAME, keys=[{'title': title}])
             return items[0] if items else None
         return self._handle_table_not_exists(get)
 
@@ -196,7 +193,7 @@ class AlternatorWikipediaClient(AlternatorClient):
             List of article items.
         """
         def get():
-            keys = [{'pk': self.PK_VALUE, 'title': t} for t in titles]
+            keys = [{'title': t} for t in titles]
             return self.get_rows(self.TABLE_NAME, keys=keys)
         return self._handle_table_not_exists(get)
 
@@ -209,7 +206,7 @@ class AlternatorWikipediaClient(AlternatorClient):
             None
         """
         def remove():
-            keys = [{'pk': self.PK_VALUE, 'title': t} for t in titles]
+            keys = [{'title': t} for t in titles]
             return self.remove_rows(self.TABLE_NAME, keys)
         return self._quitely_handle_table_not_exists(remove)
 
@@ -231,33 +228,28 @@ class AlternatorWikipediaClient(AlternatorClient):
             List of titles that exist in the database.
         """
         def get():
-            keys = [{'pk': self.PK_VALUE, 'title': t} for t in titles]
+            keys = [{'title': t} for t in titles]
             items = self.get_rows(self.TABLE_NAME, keys=keys, projection_expression='title')
             return [item['title'] for item in items if 'title' in item]
         return self._quitely_handle_table_not_exists(get) or []
 
-    def get_articles_page_from(self, start_title=None, page_size=10, forward=True):
+    def get_articles_page_from(self, start_title=None, page_size=10):
         """
-        Fetch a page of articles starting from a given title, in forward or backward order.
+        Fetch a page of articles starting from a given title, in forward order only.
         Args:
-            start_title (str or None): The title to start from (inclusive). If None, starts from the beginning/end.
+            start_title (str or None): The title to start from (exclusive). If None, starts from the beginning.
             page_size (int): Number of articles to fetch.
-            forward (bool): True for ascending (A-Z), False for descending (Z-A).
         Returns:
             List of article items (dicts with 'title' and 'text').
         """
         def get():
-            print(f"Fetching page from title: {start_title}, page size: {page_size}, forward: {forward}")
             table = self.dynamodb.Table(self.TABLE_NAME)
-            kwargs = {
-                'KeyConditionExpression': boto3.dynamodb.conditions.Key('pk').eq(self.PK_VALUE),
+            scan_kwargs = {
                 'ProjectionExpression': 'title, text',
-                'Limit': page_size,
-                'ScanIndexForward': forward
+                'Limit': page_size
             }
             if start_title:
-                op = 'gte' if forward else 'lte'
-                kwargs['KeyConditionExpression'] &= getattr(boto3.dynamodb.conditions.Key('title'), op)(start_title)
-            response = table.query(**kwargs)
+                scan_kwargs['ExclusiveStartKey'] = {'title': start_title}
+            response = table.scan(**scan_kwargs)
             return response.get('Items', [])
         return self._handle_table_not_exists(get)
