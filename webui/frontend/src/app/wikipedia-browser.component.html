@@ -1,12 +1,12 @@
 <div class="wikipedia-browser">
   <div class="tabs">
-    <button [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">File Dump</button>
-    <button [class.active]="activeTab === 'alternator'" (click)="activeTab = 'alternator'">Alternator articles</button>
     <button [class.active]="activeTab === 'search'" (click)="activeTab = 'search'">Search</button>
+    <button [class.active]="activeTab === 'alternator'" (click)="activeTab = 'alternator'">Alternator articles</button>
     <button [class.active]="activeTab === 'tests'" (click)="activeTab = 'tests'">Tests</button>
+    <button *ngIf="showFileDumpTab" [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">File Dump</button>
   </div>
 
-  <div *ngIf="activeTab === 'file'">
+  <div *ngIf="activeTab === 'file' && showFileDumpTab">
     <div class="controls" style="justify-content: center; text-align: center;">
       <label>Rows per page:
         <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">

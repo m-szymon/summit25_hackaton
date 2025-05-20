@@ -17,7 +17,7 @@ services:
       dockerfile: Dockerfile
     container_name: summit25_frontend
     ports:
-      - "4200:4200"
+      - "80:4200"
     working_dir: /app
     command: ["npm", "start", "--", "--host", "0.0.0.0"]
     environment:
