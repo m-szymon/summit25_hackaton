@@ -107,6 +107,31 @@ def get_alternator_wikipedia_articles_page():
     articles = client.get_articles_page_from(start_title=start_title, page_size=count)
     return jsonify({'articles': articles})
 
+@app.route('/api/query-articles', methods=['GET'])
+def query_articles():
+    """
+    Query articles in Alternator using a KeyConditionExpression string and return a list of articles (title, text).
+    Query params:
+        string_query (required): The KeyConditionExpression as a string (e.g., "boto3.dynamodb.conditions.Key('title').eq('SomeTitle')")
+        limit (optional): Max number of results to return.
+    """
+    string_query = request.args.get('string_query')
+    if not string_query:
+        return jsonify({'error': 'Missing string_query parameter'}), 400
+    limit = request.args.get('limit')
+    client = get_client()
+    kwargs = {}
+    if limit:
+        try:
+            kwargs['Limit'] = int(limit)
+        except Exception:
+            pass
+    try:
+        articles = client.query_articles(string_query, **kwargs)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return jsonify({'articles': articles})
+
 def run_pytest_and_store_results():
     """Run pytest and store results in a file, updating as tests progress."""
     import json

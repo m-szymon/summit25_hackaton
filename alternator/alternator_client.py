@@ -97,6 +97,27 @@ class AlternatorClient:
         response = self.dynamodb.meta.client.batch_get_item(RequestItems=request_items)
         return response['Responses'].get(table_name, [])
 
+    def query_table(self, table_name, key_condition_expression, index_name=None, **kwargs):
+        """
+        Query the specified table with a KeyConditionExpression string.
+        Args:
+            table_name (str): Name of the table.
+            key_condition_expression (str): KeyConditionExpression as a string.
+            index_name (str, optional): Name of the index to use.
+            **kwargs: Additional arguments to pass to the query.
+        Returns:
+            List of items (rows).
+        """
+        table = self.dynamodb.Table(table_name)
+        query_kwargs = {
+            'KeyConditionExpression': key_condition_expression
+        }
+        if index_name:
+            query_kwargs['IndexName'] = index_name
+        query_kwargs.update(kwargs)
+        response = table.query(**query_kwargs)
+        return response.get('Items', [])
+
 class AlternatorWikipediaClient(AlternatorClient):
     """
     Specialized client for a Wikipedia articles table in Alternator.
@@ -253,3 +274,25 @@ class AlternatorWikipediaClient(AlternatorClient):
             response = table.scan(**scan_kwargs)
             return response.get('Items', [])
         return self._handle_table_not_exists(get)
+
+    def query_articles(self, key_condition_expression, **kwargs):
+        """
+        Query the Wikipedia articles table using the OpenSearch index and a KeyConditionExpression string.
+        Returns a list of dicts with 'title' and 'text'.
+        Args:
+            key_condition_expression (str): KeyConditionExpression as a string.
+            **kwargs: Additional arguments to pass to the query.
+        Returns:
+            List of article items (dicts with 'title' and 'text').
+        """
+        items = self.query_table(
+            self.TABLE_NAME,
+            key_condition_expression,
+            index_name="OpenSearch",
+            **kwargs
+        )
+        # Only return dicts with 'title' and 'text' keys
+        return [
+            {'title': item.get('title'), 'text': item.get('text')}
+            for item in items if 'title' in item and 'text' in item
+        ]

@@ -26,7 +26,7 @@ export class WikipediaBrowserComponent implements OnInit {
   maxPage: number | null = 1;
   loading = false;
   expandedRows: Set<number> = new Set();
-  private _activeTab: 'file' | 'alternator' | 'tests' = 'file';
+  private _activeTab: 'file' | 'alternator' | 'tests' | 'search' = 'file';
 
   alternatorArticles: any[] = [];
   alternatorStartTitle: string = '';
@@ -40,6 +40,12 @@ export class WikipediaBrowserComponent implements OnInit {
   testPartial: string | null = null;
   testRunning: boolean = false;
   testPollInterval: any = null;
+
+  // Search tab state
+  searchQuery: string = '';
+  searchResults: { title: string; text: string }[] = [];
+  searchLoading: boolean = false;
+  searchError: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -190,13 +196,18 @@ export class WikipediaBrowserComponent implements OnInit {
     window.open('https://en.wikipedia.org/wiki/' + encodeURIComponent(title), '_blank');
   }
 
-  set activeTab(tab: 'file' | 'alternator' | 'tests') {
+  set activeTab(tab: 'file' | 'alternator' | 'tests' | 'search') {
     this._activeTab = tab;
     if (tab === 'alternator') {
       this.loadAlternatorArticles();
     }
     if (tab === 'tests') {
       this.pollTestResults();
+    }
+    if (tab === 'search') {
+      this.searchResults = [];
+      this.searchError = '';
+      this.searchQuery = '';
     }
   }
   get activeTab() {
@@ -234,5 +245,56 @@ export class WikipediaBrowserComponent implements OnInit {
       });
     };
     poll();
+  }
+
+  searchArticles() {
+    if (!this.searchQuery.trim()) {
+      this.searchError = 'Please enter a query string.';
+      return;
+    }
+    this.searchLoading = true;
+    this.searchError = '';
+    this.searchResults = [];
+    this.http.get<any>(`/api/query-articles?string_query=${encodeURIComponent(this.searchQuery)}`)
+      .subscribe({
+        next: res => {
+          this.searchResults = res.articles || [];
+          this.searchLoading = false;
+        },
+        error: err => {
+          this.searchError = err.error?.error || 'Search failed.';
+          this.searchLoading = false;
+        }
+      });
+  }
+
+  getHighlightedText(text: string): string {
+    if (!this.searchQuery) return text;
+    // Escape regex special characters in searchQuery
+    const escaped = this.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(escaped, 'gi');
+    return text.replace(regex, match => `<mark>${match}</mark>`);
+  }
+
+  getPreviewWithSearch(text: string, onlyCheck: boolean = false): string {
+    if (!this.searchQuery) {
+      // Default: first 3 lines
+      const lines = text.split('\n');
+      if (onlyCheck) return lines.length > 3 ? '...' : '';
+      return lines.slice(0, 3).join('\n');
+    }
+    const lines = text.split('\n');
+    // Find the first line containing the search string (case-insensitive)
+    const idx = lines.findIndex(line => line.toLowerCase().includes(this.searchQuery.toLowerCase()));
+    if (idx === -1) {
+      if (onlyCheck) return lines.length > 3 ? '...' : '';
+      return lines.slice(0, 3).join('\n');
+    }
+    // Show up to 3 lines starting from the first match
+    const trimmed = idx > 0;
+    if (onlyCheck) return (lines.length - idx) > 3 ? '...' : '';
+    let preview = lines.slice(idx, idx + 3).join('\n');
+    if (trimmed) preview = '[...]\n' + preview;
+    return preview;
   }
 }
