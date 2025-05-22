@@ -10,7 +10,6 @@ class AlternatorClient:
         self.dynamodb = boto3.resource(
             'dynamodb',
             endpoint_url=endpoint_url,
-            endpoint_url=endpoint_url,
             aws_access_key_id='user',
             aws_secret_access_key='passwd',
             region_name='us-east-1'
@@ -292,7 +291,7 @@ class AlternatorWikipediaClient(AlternatorClient):
         items = self.query_table(
             self.TABLE_NAME,
             key_condition_expression,
-            index_name="OpenSearch",
+            index_name="opensearch",
             **kwargs
         )
         # Only return dicts with 'title' and 'text' keys

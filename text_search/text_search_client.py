@@ -1,7 +1,7 @@
 import requests
 
 class TextSearchClient:
-    INDEX = "OpenSearch"
+    INDEX = "opensearch"
 
     def __init__(self, endpoint_url):
         self.endpoint_url = endpoint_url.rstrip('/')

@@ -26,7 +26,7 @@ export class WikipediaBrowserComponent implements OnInit {
   maxPage: number | null = 1;
   loading = false;
   expandedRows: Set<number> = new Set();
-  private _activeTab: 'file' | 'alternator' | 'tests' | 'search' = 'search';
+  private _activeTab: 'file' | 'alternator' | 'tests' | 'search' | 'datasets' = 'search';
 
   alternatorArticles: any[] = [];
   alternatorStartTitle: string = '';
@@ -49,6 +49,9 @@ export class WikipediaBrowserComponent implements OnInit {
 
   // Flag to show/hide the file dump tab
   showFileDumpTab: boolean = false;
+
+  // Bulk add state
+  bulkAddLoading = false;
 
   constructor(private http: HttpClient) {}
 
@@ -216,7 +219,7 @@ export class WikipediaBrowserComponent implements OnInit {
     window.open('https://en.wikipedia.org/wiki/' + encodeURIComponent(title), '_blank');
   }
 
-  set activeTab(tab: 'file' | 'alternator' | 'tests' | 'search') {
+  set activeTab(tab: 'file' | 'alternator' | 'tests' | 'search' | 'datasets') {
     this._activeTab = tab;
     if (tab === 'alternator') {
       this.loadAlternatorArticles();
@@ -316,5 +319,38 @@ export class WikipediaBrowserComponent implements OnInit {
     let preview = lines.slice(idx, idx + 3).join('\n');
     if (trimmed) preview = '[...]\n' + preview;
     return preview;
+  }
+
+  clearAlternatorTable() {
+    if (confirm('Are you sure you want to clear the alternator table?')) {
+      this.http.post('/api/clear-alternator-table', {}).subscribe({
+        next: () => alert('Alternator table cleared.'),
+        error: () => alert('Failed to clear alternator table.')
+      });
+    }
+  }
+
+  recreateTextSearchIndex() {
+    if (confirm('Are you sure you want to recreate the text search index?')) {
+      this.http.post('/api/recreate-text-search-index', {}).subscribe({
+        next: () => alert('Text search index recreated.'),
+        error: () => alert('Failed to recreate text search index.')
+      });
+    }
+  }
+
+  bulkAddFirst100ToAlternator() {
+    if (!confirm('Add the first 100 Wikipedia articles to Alternator?')) return;
+    this.bulkAddLoading = true;
+    this.http.post('/api/alternator-wikipedia-bulk-add', {}).subscribe({
+      next: (res: any) => {
+        alert('Added ' + res.count + ' articles to Alternator.');
+        this.bulkAddLoading = false;
+      },
+      error: (err) => {
+        alert('Failed to add articles: ' + (err.error?.error || err.message));
+        this.bulkAddLoading = false;
+      }
+    });
   }
 }

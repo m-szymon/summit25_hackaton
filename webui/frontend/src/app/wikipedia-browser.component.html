@@ -4,6 +4,7 @@
     <button [class.active]="activeTab === 'alternator'" (click)="activeTab = 'alternator'">Alternator articles</button>
     <button [class.active]="activeTab === 'tests'" (click)="activeTab = 'tests'">Tests</button>
     <button *ngIf="showFileDumpTab" [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">File Dump</button>
+    <button [class.active]="activeTab === 'datasets'" (click)="activeTab = 'datasets'">Datasets</button>
   </div>
 
   <div *ngIf="activeTab === 'file' && showFileDumpTab">
@@ -203,6 +204,15 @@
       </div>
     </div>
     <div *ngIf="!testResults && !testRunning">No test results available.</div>
+  </div>
+  <div *ngIf="activeTab === 'datasets'">
+    <div class="controls" style="justify-content: center; text-align: center; flex-direction: column; gap: 1em; margin: 2em 0;">
+      <button (click)="clearAlternatorTable()">Clear Alternator Table</button>
+      <button (click)="recreateTextSearchIndex()">Recreate Text Search Index</button>
+      <button (click)="bulkAddFirst100ToAlternator()" [disabled]="bulkAddLoading">
+        {{ bulkAddLoading ? 'Adding...' : 'Bulk Add 500 Wikipedia Articles to Alternator' }}
+      </button>
+    </div>
   </div>
 </div>
 

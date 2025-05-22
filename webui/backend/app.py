@@ -207,5 +207,54 @@ def has_wikipedia_config():
     has_wikipedia = 'wikipedia' in config and config['wikipedia'] is not None
     return jsonify({'has_wikipedia': has_wikipedia})
 
+@app.route('/api/clear-alternator-table', methods=['POST'])
+def clear_alternator():
+    """
+    API endpoint to clear (delete) the Alternator Wikipedia articles table.
+    """
+    client = get_client()
+    client.delete_articles_table()
+    return jsonify({'status': 'alternator_cleared'})
+
+@app.route('/api/recreate-text-search-index', methods=['POST'])
+def recreate_text_search_index():
+    """
+    API endpoint to delete and recreate the text search index.
+    """
+    text_search_client = get_text_search_client()
+    if not text_search_client:
+        return jsonify({'error': 'Text search client not configured'}), 400
+    try:
+        text_search_client.delete_index()
+    except Exception as e:
+        # Ignore if index does not exist
+        pass
+    text_search_client.create_index()
+    return jsonify({'status': 'text_search_index_recreated'})
+
+@app.route('/api/alternator-wikipedia-bulk-add', methods=['POST'])
+def add_first_100_articles_to_alternator():
+    """
+    Add the first 100 articles from the Wikipedia index to Alternator.
+    Returns a summary of added articles.
+    """
+    reader = get_reader()
+    client = get_client()
+    articles = []
+    text_search_client = get_text_search_client()
+    def collect_article(title, text):
+        articles.append({'title': title, 'text': text})
+        if text_search_client:
+            try:
+                text_search_client.add_item(title, text)
+            except Exception as e:
+                #print(f"Error adding to text-search index: {e}")
+                pass
+    reader.foreach_article(collect_article, 500)
+    if not articles:
+        return jsonify({'error': 'No articles found'}), 404
+    client.add_articles(articles)
+    return jsonify({'status': 'added', 'count': len(articles), 'titles': [a['title'] for a in articles]})
+
 if __name__ == '__main__':
     app.run(debug=True)
