@@ -5,5 +5,7 @@ COPY webui/backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY webui/backend/. .
 COPY alternator /app/alternator
+COPY text_search /app/text_search
+COPY test /app/test
 EXPOSE 5000
 CMD ["python3", "app.py"]

@@ -18,6 +18,7 @@ def text_search_settings():
 @pytest.fixture(scope="module")
 def text_search_client(text_search_settings):
     cl = TextSearchClient(endpoint_url=text_search_settings['endpoint_url'])
+    cl.INDEX = "TestIndex"
     return cl
 
 def retry_assert(tried_fn, retries=5, delay=1):

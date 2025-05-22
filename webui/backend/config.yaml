@@ -7,4 +7,4 @@ alternator:
   #endpoint_url: "http://localhost:8000"
   endpoint_url: "http://swasik-vsearch-test-usearch.germanywestcentral.cloudapp.azure.com:8000"
 #text-search:
-#  endpoint_url: "http://localhost:8001"
+  #endpoint_url: "http://localhost:8001"

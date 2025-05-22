@@ -60,6 +60,9 @@ export class WikipediaBrowserComponent implements OnInit {
         if (!this.showFileDumpTab && this._activeTab === 'file') {
           this._activeTab = 'search';
         }
+        if(this.showFileDumpTab) {
+          this.loadArticles();
+        }
       },
       error: _err => {
         this.showFileDumpTab = false;
@@ -68,7 +71,6 @@ export class WikipediaBrowserComponent implements OnInit {
         }
       }
     });
-    this.loadArticles();
     this.pollTestResults();
     // Optionally, load alternator articles on init
     // this.loadAlternatorArticles();

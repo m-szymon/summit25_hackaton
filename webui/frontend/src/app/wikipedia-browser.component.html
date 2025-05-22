@@ -119,6 +119,7 @@
         <tr>
           <th>Title</th>
           <th>Text</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -136,6 +137,10 @@
             <button (click)="toggleAlternatorRow(i)">
               {{ isAlternatorExpanded(i) ? 'Show less' : 'Show more' }}
             </button>
+          </td>
+          <td>
+            <button class="action-btn" (click)="openWikipedia(article.title)">View on Wikipedia</button><br>
+            <button (click)="removeFromAlternator(article.title)" class="action-btn">Remove from Alternator</button>
           </td>
         </tr>
       </tbody>
