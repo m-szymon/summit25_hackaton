@@ -7,4 +7,5 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 4200
+EXPOSE 80
 ENTRYPOINT ["/app/start.sh"]

@@ -9,7 +9,11 @@ class AlternatorClient:
     def __init__(self, endpoint_url):
         self.dynamodb = boto3.resource(
             'dynamodb',
-            endpoint_url=endpoint_url
+            endpoint_url=endpoint_url,
+            endpoint_url=endpoint_url,
+            aws_access_key_id='user',
+            aws_secret_access_key='passwd',
+            region_name='us-east-1'
         )
 
     def create_table(self, table_name, key_schema, attribute_definitions):

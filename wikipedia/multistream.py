@@ -6,6 +6,7 @@ import mwparserfromhell
 import struct
 
 class WikipediaMultistreamReader:
+    index_type: str = 'binary'
     def __init__(self, xml_bz2_path: str, index_bz2_path: str):
         self.xml_bz2_path = xml_bz2_path
         self.index_bz2_path = index_bz2_path
@@ -63,12 +64,12 @@ class WikipediaMultistreamReader:
                 seen_offsets.add(o)
         return offset_groups, ordered_offsets
 
-    def list_articles_by_index(self, start: int = 0, count: int = 1, index_type: str = 'binary') -> list:
+    def list_articles_by_index(self, start: int = 0, count: int = 1) -> list:
         """
         For a given starting index, return a list of (title, text) tuples for the corresponding articles from the dump.
         index_type: 'text' for text index, 'binary' for binary index.
         """
-        if index_type == 'binary':
+        if self.index_type == 'binary':
             entries = self.list_binary_index_entries(start, count)
         else:
             entries = self.list_index_entries(start, count)

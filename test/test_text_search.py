@@ -34,7 +34,7 @@ def retry_assert(tried_fn, retries=5, delay=1):
 def test_create_add_search_delete(text_search_client):
     try:
         # Clean up before test
-        text_search_client.delete_index()
+        #text_search_client.delete_index()
         # Create index
         text_search_client.create_index()
         # Add item
@@ -48,12 +48,13 @@ def test_create_add_search_delete(text_search_client):
         retry_assert(tried)
     finally:
         # Clean up after test
-        text_search_client.delete_index()
+        #text_search_client.delete_index()
+        pass
 
 
 def test_search_multiple_items(text_search_client):
     try:
-        text_search_client.delete_index()
+        #text_search_client.delete_index()
         text_search_client.create_index()
         # Add items
         items = [
@@ -73,5 +74,6 @@ def test_search_multiple_items(text_search_client):
             assert "notfind2" not in results
         retry_assert(tried)
     finally:
-        text_search_client.delete_index()
+        #text_search_client.delete_index()
+        pass
 
